@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-courses_students-table
+      author: Bohdan Bilko
+      changes:
+        - createTable:
+            tableName: courses_students
+            columns:
+              - column:
+                  name: course_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    references: courses(id)
+                    foreignKeyName: fk_courses_students_course
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+                    references: users(id)
+                    foreignKeyName: fk_courses_students_student

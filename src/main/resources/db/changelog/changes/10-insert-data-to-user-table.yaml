@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-admin-to-users-table
+      author: Bohdan Bilko
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: "1"}
+              - column: { name: email, value: "admin@gmail.com" }
+              - column: { name: password, value: "$2a$10$uKaZlvPgZ.EXJ.hJHC4Niel/Mn0hhCWACpreRPXdrMOj6/r/br3w2" }
+              - column: { name: full_name, value: "admin"}
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, value: "2"}
+              - column: { name: email, value: "student@gmail.com" }
+              - column: { name: password, value: "$2a$10$uKaZlvPgZ.EXJ.hJHC4Niel/Mn0hhCWACpreRPXdrMOj6/r/br3w2" }
+              - column: { name: full_name, value: "Student"}
