@@ -7,9 +7,8 @@ import org.bilko.educationalprogram.model.Module;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(config = MapperConfig.class)
+@Mapper(config = MapperConfig.class, uses = CourseMapper.class)
 public interface ModuleMapper {
-    @Mapping(target = "courseId", source = "course.id")
     ModuleResponseDto toDto(Module module);
 
     Module toEntity(ModuleRequestDto requestDto);

@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: create-users-table
+      id: 1
       author: Bohdan Bilko
       changes:
         - createTable:
@@ -12,31 +12,26 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
+                    nullable: false
               - column:
                   name: email
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: password
-                  type: varchar(255)
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column:
                   name: full_name
-                  type: varchar(255)
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
+              - column:
+                  name: password
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
               - column:
                   name: organization_id
                   type: bigint
-                  constraints:
-                    references: organizations(id)
-                    foreignKeyName: fk_users_organization_id
-              - column:
-                  name: is_deleted
-                  type: boolean
-                  defaultValueBoolean: false
-                  constraints:
-                    nullable: false

@@ -2,24 +2,20 @@ package org.bilko.educationalprogram.service;
 
 import org.bilko.educationalprogram.dto.user.UpdateUserRequestDto;
 import org.bilko.educationalprogram.dto.user.UserResponseDto;
-import org.bilko.educationalprogram.model.User;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
 public interface UserService {
-    List<UserResponseDto> getAll();
+    List<UserResponseDto> getAll(Pageable pageable);
 
     UserResponseDto update(Long id, UpdateUserRequestDto requestDto);
 
     void remove(Long id);
 
-//    User getByEmail(String email);
-
     UserResponseDto findById(Long id);
 
     UserResponseDto updateOrganization(Long organizationId, String email);
-
-//    List<UserResponseDto> getAllByCourseId(Long courseId);
 
     UserResponseDto getProfile(String email);
 

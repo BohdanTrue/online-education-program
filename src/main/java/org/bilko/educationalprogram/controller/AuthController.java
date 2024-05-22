@@ -1,5 +1,6 @@
 package org.bilko.educationalprogram.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bilko.educationalprogram.dto.auth.AuthResponseDto;
 import org.bilko.educationalprogram.dto.auth.LoginRequestDto;
@@ -21,13 +22,13 @@ public class AuthController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/registration")
-    public AuthResponseDto register(@RequestBody RegisterRequestDto requestDto) {
+    public AuthResponseDto register(@RequestBody @Valid RegisterRequestDto requestDto) {
         return authService.register(requestDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
-    public AuthResponseDto login(@RequestBody LoginRequestDto requestDto) {
+    public AuthResponseDto login(@RequestBody @Valid LoginRequestDto requestDto) {
         return authService.login(requestDto);
     }
 }

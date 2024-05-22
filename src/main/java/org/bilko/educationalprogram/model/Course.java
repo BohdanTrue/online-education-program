@@ -49,11 +49,6 @@ public class Course {
             joinColumns = @JoinColumn(name = "course_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<User> students;
-//
-//    @ToString.Exclude
-//    @EqualsAndHashCode.Exclude
-//    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
-//    private List<Module> modules;
 
     @Column(nullable = false)
     private boolean isDeleted = false;

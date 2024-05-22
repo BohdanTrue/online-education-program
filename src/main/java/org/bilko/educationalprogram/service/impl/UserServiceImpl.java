@@ -1,9 +1,9 @@
 package org.bilko.educationalprogram.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.bilko.educationalprogram.dto.user.UpdateUserRequestDto;
 import org.bilko.educationalprogram.dto.user.UserResponseDto;
+import org.bilko.educationalprogram.exception.EntityNotFoundException;
 import org.bilko.educationalprogram.mapper.UserMapper;
 import org.bilko.educationalprogram.model.Course;
 import org.bilko.educationalprogram.model.Organization;
@@ -12,24 +12,29 @@ import org.bilko.educationalprogram.repository.CourseRepository;
 import org.bilko.educationalprogram.repository.OrganizationRepository;
 import org.bilko.educationalprogram.repository.UserRepository;
 import org.bilko.educationalprogram.service.UserService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private static final String CANNOT_FIND_ORGANIZATION_BY_ID = "Cannot find organization by id: ";
+    private static final String CANNOT_FIND_COURSE_BY_ID = "Cannot find course by id: ";
+    private static final String CANNOT_FIND_USERS_BY_ORGANIZATION_ID = "Cannot find users by organization id: ";
+    private static final String CANNOT_FIND_USER_BY_ID = "Cannot find user by id: ";
+    private static final String CANNOT_FIND_USER_BY_EMAIL = "Cannot find user by email: ";
+    private static final String USER_ALREADY_EXISTS = "User: %s already exists on this course";
     private final UserRepository userRepository;
     private final OrganizationRepository organizationRepository;
     private final CourseRepository courseRepository;
     private final UserMapper userMapper;
 
     @Override
-    public List<UserResponseDto> getAll() {
+    public List<UserResponseDto> getAll(Pageable pageable) {
 
-        return userRepository.findAll().stream()
+        return userRepository.findAll(pageable).stream()
                 .map(userMapper::toDto)
                 .toList();
     }
@@ -59,7 +64,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto updateOrganization(Long organizationId, String email) {
         Organization organization = organizationRepository.findById(organizationId)
-                .orElseThrow(() -> new EntityNotFoundException("Cannot find organization by id: " + organizationId));
+                .orElseThrow(() -> new EntityNotFoundException(CANNOT_FIND_ORGANIZATION_BY_ID + organizationId));
 
         User user = getByEmail(email);
         user.setOrganization(organization);
@@ -71,14 +76,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponseDto updateCourse(Long courseId, String email) {
         Course course = courseRepository.findById(courseId)
-                .orElseThrow(() -> new EntityNotFoundException("Cannot find course by id: " + courseId));
+                .orElseThrow(() -> new EntityNotFoundException(CANNOT_FIND_COURSE_BY_ID + courseId));
 
         User user = getByEmail(email);
 
         List<User> students = course.getStudents();
 
         if (students.contains(user)) {
-            throw new RuntimeException("User already exist: " + user.getEmail());
+            throw new RuntimeException(String.format(USER_ALREADY_EXISTS, user.getEmail()));
         }
 
         students.add(user);
@@ -109,7 +114,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDto> getAllByOrganizationId(Long organizationId) {
         List<User> users = userRepository.findByOrganizationId(organizationId)
-                .orElseThrow(() -> new EntityNotFoundException("Cannot find users by organization id: " + organizationId));
+                .orElseThrow(() -> new EntityNotFoundException(CANNOT_FIND_USERS_BY_ORGANIZATION_ID + organizationId));
 
         return users.stream()
                 .map(userMapper::toDto)
@@ -118,11 +123,11 @@ public class UserServiceImpl implements UserService {
 
     private User getById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Cannot find user by id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException(CANNOT_FIND_USER_BY_ID + id));
     }
 
     private User getByEmail(String email) {
         return userRepository.findFirstByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Cannot find user by email: " + email));
+                .orElseThrow(() -> new EntityNotFoundException(CANNOT_FIND_USER_BY_EMAIL + email));
     }
 }

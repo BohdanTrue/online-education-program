@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-user-id-sequence
+      author: Bohdan Bilko
+      changes:
+        - createSequence:
+            sequenceName: user_id_seq
+            startValue: 3
+            incrementBy: 1

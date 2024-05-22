@@ -34,11 +34,6 @@ public class Organization {
 
     private String description;
 
-//    @ToString.Exclude
-//    @EqualsAndHashCode.Exclude
-//    @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY)
-//    private List<Program> programs;
-
     @Column(nullable = false)
     private boolean isDeleted = false;
 }
