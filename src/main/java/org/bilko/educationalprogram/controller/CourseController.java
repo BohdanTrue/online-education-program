@@ -1,5 +1,6 @@
 package org.bilko.educationalprogram.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bilko.educationalprogram.dto.course.CourseRequestDto;
@@ -25,20 +26,7 @@ import java.util.List;
 public class CourseController {
     private final CourseService courseService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping
-    public List<CourseResponseDto> getAll(Pageable pageable) {
-        return courseService.getAll(pageable);
-    }
-
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{id}")
-    public CourseResponseDto getById(@PathVariable Long id) {
-        return courseService.getById(id);
-    }
-
+    @Operation(summary = "Create a new course", description = "Create a new course")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -46,13 +34,35 @@ public class CourseController {
         return courseService.create(requestDto);
     }
 
+    @Operation(summary = "Get all courses", description = "Get a list of all courses")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    public List<CourseResponseDto> getAll(Pageable pageable) {
+        return courseService.getAll(pageable);
+    }
+
+    @Operation(summary = "Get a course by id", description = "Get course by certain id")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
+    public CourseResponseDto getById(@PathVariable Long id) {
+        return courseService.getById(id);
+    }
+
+    @Operation(summary = "Update a course", description = "Update a course by id, "
+            + "if the course doesn't exist, it will throw exception")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    public CourseResponseDto update(@PathVariable Long id, @RequestBody @Valid CourseRequestDto requestDto) {
+    public CourseResponseDto update(
+            @PathVariable Long id,
+            @RequestBody @Valid CourseRequestDto requestDto
+    ) {
         return courseService.update(id, requestDto);
     }
 
+    @Operation(summary = "Delete a course by id", description = "Delete a course by certain id")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")

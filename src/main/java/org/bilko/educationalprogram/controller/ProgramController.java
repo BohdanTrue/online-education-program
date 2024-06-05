@@ -1,5 +1,6 @@
 package org.bilko.educationalprogram.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bilko.educationalprogram.dto.program.ProgramRequestDto;
@@ -25,20 +26,7 @@ import java.util.List;
 public class ProgramController {
     private final ProgramService programService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping
-    public List<ProgramResponseDto> getAll(Pageable pageable) {
-        return programService.getAll(pageable);
-    }
-
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{id}")
-    public ProgramResponseDto getById(@PathVariable Long id) {
-        return programService.getById(id);
-    }
-
+    @Operation(summary = "Create a new program", description = "Create a new program")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -46,6 +34,24 @@ public class ProgramController {
         return programService.create(requestDto);
     }
 
+    @Operation(summary = "Get all programs", description = "Get a list of all programs")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    public List<ProgramResponseDto> getAll(Pageable pageable) {
+        return programService.getAll(pageable);
+    }
+
+    @Operation(summary = "Get a program by id", description = "Get a program by certain id")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
+    public ProgramResponseDto getById(@PathVariable Long id) {
+        return programService.getById(id);
+    }
+
+    @Operation(summary = "Update a program by id", description = "Update a program by id, "
+            + "if the program doesn't exist, it will throw exception")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
@@ -53,6 +59,7 @@ public class ProgramController {
         return programService.update(id, requestDto);
     }
 
+    @Operation(summary = "Delete a program by id", description = "Delete a program by certain id")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")

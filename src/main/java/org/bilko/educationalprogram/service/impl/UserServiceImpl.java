@@ -1,9 +1,9 @@
 package org.bilko.educationalprogram.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.bilko.educationalprogram.dto.user.UpdateUserRequestDto;
 import org.bilko.educationalprogram.dto.user.UserResponseDto;
-import org.bilko.educationalprogram.exception.EntityNotFoundException;
 import org.bilko.educationalprogram.mapper.UserMapper;
 import org.bilko.educationalprogram.model.Course;
 import org.bilko.educationalprogram.model.Organization;
@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService {
     private static final String CANNOT_FIND_ORGANIZATION_BY_ID = "Cannot find organization by id: ";
     private static final String CANNOT_FIND_COURSE_BY_ID = "Cannot find course by id: ";
     private static final String CANNOT_FIND_USERS_BY_ORGANIZATION_ID = "Cannot find users by organization id: ";
+    private static final String CANNOT_FIND_USERS_BY_COURSE_ID = "Cannot find users by course id: ";
     private static final String CANNOT_FIND_USER_BY_ID = "Cannot find user by id: ";
     private static final String CANNOT_FIND_USER_BY_EMAIL = "Cannot find user by email: ";
     private static final String USER_ALREADY_EXISTS = "User: %s already exists on this course";
@@ -40,11 +41,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto update(Long id, UpdateUserRequestDto requestDto) {
-        User user = getById(id);
+    public UserResponseDto update(String email, UpdateUserRequestDto requestDto) {
+        User user = userRepository.findFirstByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException(CANNOT_FIND_USER_BY_EMAIL));
 
         user.setFullName(requestDto.getFullName());
-        user.setEmail(requestDto.getEmail());
+        user.setEmail(email);
         user.setPassword(requestDto.getPassword());
 
         return userMapper.toDto(user);
@@ -96,16 +98,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDto(user);
     }
 
-//    @Override
-//    public List<UserResponseDto> getAllByCourseId(Long courseId) {
-//        List<User> users = userRepository.findByCourseId(courseId)
-//                .orElseThrow(() -> new EntityNotFoundException("Cannot find users by course id: " + courseId));
-//
-//        return users.stream()
-//                .map(userMapper::toDto)
-//                .toList();
-//    }
-
     @Override
     public UserResponseDto getProfile(String email) {
         return userMapper.toDto(getByEmail(email));
@@ -113,10 +105,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserResponseDto> getAllByOrganizationId(Long organizationId) {
-        List<User> users = userRepository.findByOrganizationId(organizationId)
-                .orElseThrow(() -> new EntityNotFoundException(CANNOT_FIND_USERS_BY_ORGANIZATION_ID + organizationId));
+        return userRepository.findByOrganizationId(organizationId)
+                .orElseThrow(() -> new EntityNotFoundException(CANNOT_FIND_USERS_BY_ORGANIZATION_ID + organizationId))
+                .stream()
+                .map(userMapper::toDto)
+                .toList();
+    }
 
-        return users.stream()
+    @Override
+    public List<UserResponseDto> getAllByCourseId(Long courseId) {
+        return userRepository.findByCourseId(courseId)
+                .orElseThrow(() -> new EntityNotFoundException(CANNOT_FIND_USERS_BY_COURSE_ID + courseId))
+                .stream()
                 .map(userMapper::toDto)
                 .toList();
     }

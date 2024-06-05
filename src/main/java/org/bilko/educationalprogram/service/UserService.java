@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserService {
     List<UserResponseDto> getAll(Pageable pageable);
 
-    UserResponseDto update(Long id, UpdateUserRequestDto requestDto);
+    UserResponseDto update(String email, UpdateUserRequestDto requestDto);
 
     void remove(Long id);
 
@@ -20,6 +20,8 @@ public interface UserService {
     UserResponseDto getProfile(String email);
 
     List<UserResponseDto> getAllByOrganizationId(Long organizationId);
+
+    List<UserResponseDto> getAllByCourseId(Long courseId);
 
     UserResponseDto updateCourse(Long courseId, String email);
 }

@@ -17,11 +17,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u " +
             "LEFT JOIN FETCH u.organization o " +
+            "LEFT JOIN FETCH u.courses c " +
+            "LEFT JOIN FETCH u.roles r " +
             "WHERE u.email = :email")
     Optional<User> findFirstByEmail(String email);
 
     @Query("SELECT u FROM User u " +
             "LEFT JOIN FETCH u.organization o " +
+            "LEFT JOIN FETCH u.courses c " +
+            "LEFT JOIN FETCH u.roles r " +
             "WHERE o.id = :organizationId")
     Optional<List<User>> findByOrganizationId(Long organizationId);
+
+    @Query("SELECT u FROM User u " +
+            "LEFT JOIN FETCH u.organization o " +
+            "LEFT JOIN FETCH u.courses c " +
+            "LEFT JOIN FETCH u.roles r " +
+            "WHERE c.id = :courseId")
+    Optional<List<User>> findByCourseId(Long courseId);
 }

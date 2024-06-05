@@ -1,9 +1,9 @@
 package org.bilko.educationalprogram.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.bilko.educationalprogram.dto.module.ModuleRequestDto;
 import org.bilko.educationalprogram.dto.module.ModuleResponseDto;
-import org.bilko.educationalprogram.exception.EntityNotFoundException;
 import org.bilko.educationalprogram.mapper.ModuleMapper;
 import org.bilko.educationalprogram.model.Course;
 import org.bilko.educationalprogram.model.Module;

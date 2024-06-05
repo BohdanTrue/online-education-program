@@ -1,5 +1,6 @@
 package org.bilko.educationalprogram.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bilko.educationalprogram.dto.organization.OrganizationRequestDto;
@@ -25,6 +26,15 @@ import java.util.List;
 public class OrganizationController {
     private final OrganizationService organizationService;
 
+    @Operation(summary = "Create a new organization", description = "Create a new organization")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping
+    public OrganizationResponseDto create(@RequestBody @Valid OrganizationRequestDto requestDto) {
+        return organizationService.create(requestDto);
+    }
+
+    @Operation(summary = "Get all organizations", description = "Get a list of all organizations")
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
@@ -32,6 +42,7 @@ public class OrganizationController {
         return organizationService.getAll(pageable);
     }
 
+    @Operation(summary = "Get an organization by id", description = "Get an organization by certain id")
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
@@ -39,20 +50,19 @@ public class OrganizationController {
         return organizationService.getById(id);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
-    public OrganizationResponseDto create(@RequestBody OrganizationRequestDto requestDto) {
-        return organizationService.create(requestDto);
-    }
-
+    @Operation(summary = "Update an organization by id", description = "Update an organization by id, "
+            + "if the organization doesn't exist, it will throw exception")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    public OrganizationResponseDto update(@PathVariable Long id, @RequestBody @Valid OrganizationRequestDto requestDto) {
+    public OrganizationResponseDto update(
+            @PathVariable Long id,
+            @RequestBody @Valid OrganizationRequestDto requestDto
+    ) {
         return organizationService.update(id, requestDto);
     }
 
+    @Operation(summary = "Delete an organization by id", description = "Delete an organization by certain id")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")

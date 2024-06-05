@@ -1,5 +1,6 @@
 package org.bilko.educationalprogram.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bilko.educationalprogram.dto.module.ModuleRequestDto;
@@ -25,20 +26,7 @@ import java.util.List;
 public class ModuleController {
     private final ModuleService moduleService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping
-    public List<ModuleResponseDto> getAll(Pageable pageable) {
-        return moduleService.getAll(pageable);
-    }
-
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
-    @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{id}")
-    public ModuleResponseDto getById(@PathVariable Long id) {
-        return moduleService.getById(id);
-    }
-
+    @Operation(summary = "Create a new module", description = "Create a new module")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
@@ -46,13 +34,35 @@ public class ModuleController {
         return moduleService.create(requestDto);
     }
 
+    @Operation(summary = "Get all modules", description = "Get a list of all modules")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping
+    public List<ModuleResponseDto> getAll(Pageable pageable) {
+        return moduleService.getAll(pageable);
+    }
+
+    @Operation(summary = "Get a module by id", description = "Get a module by certain id")
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/{id}")
+    public ModuleResponseDto getById(@PathVariable Long id) {
+        return moduleService.getById(id);
+    }
+
+    @Operation(summary = "Update a module by id", description = "Update a module by id, "
+            + "if the module doesn't exist, it will throw exception")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/{id}")
-    public ModuleResponseDto update(@PathVariable Long id, @RequestBody @Valid ModuleRequestDto requestDto) {
+    public ModuleResponseDto update(
+            @PathVariable Long id,
+            @RequestBody @Valid ModuleRequestDto requestDto
+    ) {
         return moduleService.update(id, requestDto);
     }
 
+    @Operation(summary = "Delete a module by id", description = "Delete a module by certain id")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")

@@ -1,5 +1,7 @@
 package org.bilko.educationalprogram.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.bilko.educationalprogram.dto.user.UpdateUserRequestDto;
 import org.bilko.educationalprogram.dto.user.UserResponseDto;
@@ -24,6 +26,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
+    @Operation(summary = "Get all registered users", description = "Get a list of all registered users")
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
@@ -31,13 +34,20 @@ public class UserController {
         return userService.getAll(pageable);
     }
 
-    //api/users - GET: Отримати всіх користувачів by course
-//    @ResponseStatus(HttpStatus.OK)
-//    @GetMapping("/course/{courseId}")
-//    public List<UserResponseDto> getAllByCourseId(@PathVariable Long courseId) {
-//        return userService.getAllByCourseId(courseId);
-//    }
-    //api/users - GET: Отримати всіх користувачів by organization
+    @Operation(
+            summary = "Get all users by course id",
+            description = "Get a list of all users who have a certain course"
+    )
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/course/{courseId}")
+    public List<UserResponseDto> getAllByCourseId(@PathVariable Long courseId) {
+        return userService.getAllByCourseId(courseId);
+    }
+
+    @Operation(
+            summary = "Get all users by organization id",
+            description = "Get a list of all users who have a certain organization"
+    )
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/organization/{organizationId}")
@@ -45,30 +55,50 @@ public class UserController {
         return userService.getAllByOrganizationId(organizationId);
     }
 
-    ///api/users/{id} - GET: Отримати користувача за його ID //admin
+    @Operation(
+            summary = "Get an user information",
+            description = "Get the information of the current user"
+    )
+    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
+    @GetMapping("/profile")
+    public UserResponseDto getInfo(Authentication authentication) {
+        String email = authentication.getName();
+
+        return userService.getProfile(email);
+    }
+
+    @Operation(
+            summary = "Get an user by id",
+            description = "Get an user by certain id"
+    )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
     public UserResponseDto getById(@PathVariable Long id) {
         return userService.findById(id);
     }
 
+    @Operation(
+            summary = "Update an user",
+            description = "Update an current user"
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
-    @PutMapping("/{id}")
+    @PutMapping("/update")
     public UserResponseDto update(
-            @PathVariable Long id,
-            @RequestBody UpdateUserRequestDto requestDto
+            Authentication authentication,
+            @RequestBody @Valid UpdateUserRequestDto requestDto
     ) {
-        return userService.update(id, requestDto);
+        String email = authentication.getName();
+
+        return userService.update(email, requestDto);
     }
 
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        userService.remove(id);
-    }
 
+    @Operation(
+            summary = "Update an user organization",
+            description = "User choose a certain organization by id"
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/organization/{id}")
@@ -81,6 +111,10 @@ public class UserController {
         return userService.updateOrganization(id, email);
     }
 
+    @Operation(
+            summary = "Update an user course",
+            description = "User choose a certain course by id"
+    )
     @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @PutMapping("/course/{id}")
@@ -93,11 +127,10 @@ public class UserController {
         return userService.updateCourse(id, email);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN')")
-    @GetMapping("/profile")
-    public UserResponseDto getInfo(Authentication authentication) {
-        String email = authentication.getName();
-
-        return userService.getProfile(email);
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        userService.remove(id);
     }
 }
