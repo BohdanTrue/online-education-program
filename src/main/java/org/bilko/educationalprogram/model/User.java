@@ -34,8 +34,7 @@ import java.util.Set;
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
-    @SequenceGenerator(name="user_id_seq", sequenceName="user_id_seq", allocationSize=1)
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="user_id_seq")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String fullName;
@@ -52,7 +51,7 @@ public class User implements UserDetails {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(mappedBy = "students", fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
     private Set<Course> courses = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -98,3 +97,7 @@ public class User implements UserDetails {
         return !isDeleted;
     }
 }
+
+
+//    @SequenceGenerator(name="user_id_seq", sequenceName="user_id_seq", allocationSize=1)
+//    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="user_id_seq")

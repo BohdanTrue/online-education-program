@@ -23,6 +23,9 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
 
     @Query("SELECT m FROM Module m " +
             "LEFT JOIN FETCH m.course c " +
+            "LEFT JOIN FETCH c.students s " +
+            "LEFT JOIN FETCH s.organization o " +
+            "LEFT JOIN FETCH s.courses cs " +
             "WHERE m.id = :id")
     Optional<Module> findById(Long id);
 }

@@ -38,6 +38,7 @@ public class UserController {
             summary = "Get all users by course id",
             description = "Get a list of all users who have a certain course"
     )
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/course/{courseId}")
     public List<UserResponseDto> getAllByCourseId(@PathVariable Long courseId) {
